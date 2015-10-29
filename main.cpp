@@ -41,7 +41,7 @@ PixelSet genPixelSet(const cv::Mat &src)
   cv::findNonZero(gradMag > eps, movingIndexes);
 
   std::vector<MovingPixel> pixels;
-  for (auto &index : movingIndexes)
+  for (const auto &index : movingIndexes)
     pixels.push_back(MovingPixel(index, gradX.at<double>(index), gradY.at<double>(index)));
 
   return PixelSet(pixels);
