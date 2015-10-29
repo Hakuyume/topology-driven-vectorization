@@ -34,9 +34,9 @@ PixelSet::PixelSet(const std::vector<Pixel> &pixels)
       active++;
 }
 
-std::vector<Pixel> PixelSet::findNeighbors(const Vector &p, const double &r) const
+std::list<Pixel> PixelSet::findNeighbors(const Vector &p, const double &r) const
 {
-  std::vector<Pixel> neighbors;
+  std::list<Pixel> neighbors;
 
   for (int dx = -ceil(r); dx <= ceil(r); dx++)
     for (int dy = -ceil(r); dy <= ceil(r); dy++) {

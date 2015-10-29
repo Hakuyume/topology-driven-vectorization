@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <list>
 #include <map>
 #include <Eigen/Core>
 
@@ -29,7 +31,7 @@ class PixelSet
 {
 public:
   PixelSet(const std::vector<Pixel> &pixels);
-  std::vector<Pixel> findNeighbors(const Vector &p, const double &r) const;
+  std::list<Pixel> findNeighbors(const Vector &p, const double &r) const;
   void move();
   size_t countActives() const;
 
@@ -44,6 +46,6 @@ private:
 
   size_t active;
   std::vector<Pixel> pixels;
-  std::map<Vector, std::vector<Pixel>, CmpVector> pixelMap;
+  std::map<Vector, std::list<Pixel>, CmpVector> pixelMap;
 };
 }
