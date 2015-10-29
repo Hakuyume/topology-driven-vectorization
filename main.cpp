@@ -2,31 +2,13 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-#include <Eigen/Core>
+#include "pixel.hpp"
 
-class MovingPixel
+pixel::PixelSet genPixelSet(const cv::Mat &src)
 {
-public:
-  MovingPixel(const cv::Point &pos, const double &gradX, const double &gradY)
-      : p{pos.x, pos.y}, m{gradX * deltaT, gradY * deltaT}, active{true} {}
-  bool isActive() const { return active; }
-private:
-  static constexpr double deltaT = 0.1;
-  Eigen::Vector2d p, m;
-  bool active;
-};
+  constexpr double epsCoeff = 0.1;
+  constexpr double deltaT = 0.1;
 
-class PixelSet
-{
-public:
-  PixelSet(const std::vector<MovingPixel> &pixels)
-      : pixels{pixels} {}
-private:
-  std::vector<MovingPixel> pixels;
-};
-
-PixelSet genPixelSet(const cv::Mat &src)
-{
   cv::Mat gradX, gradY;
   cv::Sobel(src, gradX, CV_64F, 1, 0, 3);
   cv::Sobel(src, gradY, CV_64F, 0, 1, 3);
@@ -36,15 +18,18 @@ PixelSet genPixelSet(const cv::Mat &src)
   double gradMax;
   cv::minMaxLoc(gradMag, NULL, &gradMax, NULL, NULL);
 
-  const auto eps = gradMax * 0.1;
+  const auto eps = gradMax * epsCoeff;
   std::vector<cv::Point> movingIndexes;
   cv::findNonZero(gradMag > eps, movingIndexes);
 
-  std::vector<MovingPixel> pixels;
+  std::vector<pixel::Pixel> pixels;
   for (const auto &index : movingIndexes)
-    pixels.push_back(MovingPixel(index, gradX.at<double>(index), gradY.at<double>(index)));
+    pixels.push_back(
+        pixel::Pixel(
+            pixel::Vector(index.x, index.y),
+            pixel::Vector(gradX.at<double>(index), gradY.at<double>(index)) * deltaT));
 
-  return PixelSet(pixels);
+  return pixel::PixelSet(pixels);
 }
 
 int main(int argc, char *argv[])
