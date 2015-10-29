@@ -37,7 +37,8 @@ cv::Mat pixelSet2Mat(const cv::Size &size, const pixel::PixelSet &pixelSet)
 {
   cv::Mat mat{size, CV_8U, cv::Scalar(0)};
   for (const auto &p : pixelSet.allPixels())
-    mat.at<uchar>(p.pos()(1), p.pos()(0)) = 255;
+    if (not p.isActive())
+      mat.at<uchar>(p.pos()(1), p.pos()(0)) = 255;
   return mat;
 }
 
