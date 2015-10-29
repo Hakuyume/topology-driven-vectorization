@@ -41,8 +41,10 @@ private:
   struct CmpVector {
     bool operator()(const Vector &a, const Vector &b) const
     {
-      return (static_cast<int>(a(0)) < static_cast<int>(b(0))) ||
-             (static_cast<int>(a(1)) < static_cast<int>(b(1)));
+      if (floor(a(0)) != floor(b(0)))
+        return floor(a(0)) < floor(b(0));
+      else
+        return floor(a(1)) < floor(b(1));
     }
   };
 
