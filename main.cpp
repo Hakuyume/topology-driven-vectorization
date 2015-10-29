@@ -29,12 +29,12 @@ pixel::PixelSet mat2PixelSet(const cv::Mat &src)
             pixel::Vector(index.x, index.y),
             pixel::Vector(gradX.at<double>(index), gradY.at<double>(index)) * deltaT));
 
-  return pixel::PixelSet(src.size().width, src.size().height, pixels);
+  return pixel::PixelSet(pixels);
 }
 
-cv::Mat pixelSet2Mat(const pixel::PixelSet &pixelSet)
+cv::Mat pixelSet2Mat(const cv::Size &size, const pixel::PixelSet &pixelSet)
 {
-  cv::Mat mat{cv::Size(pixelSet.width(), pixelSet.height()), CV_8U, cv::Scalar(0)};
+  cv::Mat mat{size, CV_8U, cv::Scalar(0)};
   for (const auto &p : pixelSet.allPixels())
     mat.at<uchar>(p.pos()(1), p.pos()(0)) = 255;
   return mat;
@@ -60,6 +60,14 @@ int main(int argc, char *argv[])
   while (pixelSet.countActivePixels() > active * 0.01) {
     pixelSet.move();
     std::cout << pixelSet.countActivePixels() << std::endl;
+  }
+
+  auto result = pixelSet2Mat(src.size(), pixelSet);
+
+  cv::imshow("input", src);
+  cv::imshow("ouput", result);
+
+  while (cv::waitKey(0) != 'q') {
   }
 
   return 0;

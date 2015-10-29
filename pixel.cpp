@@ -25,21 +25,6 @@ void Pixel::move()
 
 void Pixel::check(const PixelSet &pixelSet)
 {
-  if (p(0) < 0) {
-    p(0) = 0;
-    active = false;
-  } else if (pixelSet.width() <= p(0)) {
-    p(0) = pixelSet.width() - 1;
-    active = false;
-  }
-  if (p(1) < 0) {
-    p(1) = 0;
-    active = false;
-  } else if (pixelSet.height() <= p(1)) {
-    p(1) = pixelSet.height() - 1;
-    active = false;
-  }
-
   if (not active)
     return;
 
@@ -50,8 +35,8 @@ void Pixel::check(const PixelSet &pixelSet)
     }
 }
 
-PixelSet::PixelSet(const size_t &width, const size_t &height, const std::vector<Pixel> &pixels)
-    : w{width}, h{height}, pixels{pixels}
+PixelSet::PixelSet(const std::vector<Pixel> &pixels)
+    : pixels{pixels}
 {
   actives = 0;
   for (auto &p : pixels)
@@ -80,9 +65,6 @@ std::list<Pixel> PixelSet::findNeighbors(const Vector &p, const double &r) const
 
 void PixelSet::move()
 {
-  for (auto &p : pixels)
-    p.move();
-
   pixelMap.clear();
   for (const auto &p : pixels) {
     const auto it = pixelMap.find(p.pos());
@@ -98,15 +80,9 @@ void PixelSet::move()
     if (p.isActive())
       actives++;
   }
-}
 
-size_t PixelSet::width() const
-{
-  return w;
-}
-size_t PixelSet::height() const
-{
-  return h;
+  for (auto &p : pixels)
+    p.move();
 }
 
 size_t PixelSet::countActivePixels() const

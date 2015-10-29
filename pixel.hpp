@@ -29,13 +29,11 @@ private:
 class PixelSet
 {
 public:
-  PixelSet(const size_t &width, const size_t &height, const std::vector<Pixel> &pixels);
+  PixelSet(const std::vector<Pixel> &pixels);
   std::list<Pixel> findNeighbors(const Vector &p, const double &r) const;
   void move();
   size_t countActivePixels() const;
   std::vector<Pixel> allPixels() const;
-  size_t width() const;
-  size_t height() const;
 
 private:
   struct CmpVector {
@@ -48,7 +46,6 @@ private:
     }
   };
 
-  size_t w, h;
   size_t actives;
   std::vector<Pixel> pixels;
   std::map<Vector, std::list<Pixel>, CmpVector> pixelMap;
