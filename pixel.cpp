@@ -56,8 +56,13 @@ std::vector<Pixel> PixelSet::findNeighbors(const Vector &p, const double &r) con
 void PixelSet::move()
 {
   pixelMap.clear();
-  for (const auto &p : pixels)
-    pixelMap[p.p].push_back(p);
+  for (const auto &p : pixels) {
+    const auto it = pixelMap.find(p.p);
+    if (it == pixelMap.end())
+      pixelMap.insert({p.p, {p}});
+    else
+      it->second.push_back(p);
+  }
 
   active = 0;
   for (auto &p : pixels) {
