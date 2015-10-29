@@ -4,11 +4,12 @@
 #include <opencv2/highgui.hpp>
 #include "pixel.hpp"
 
+constexpr double epsCoeff = 0.1;
+constexpr double deltaT = 0.1;
+constexpr double movingLimit = 0.01;
+
 pixel::PixelSet mat2PixelSet(const cv::Mat &src)
 {
-  constexpr double epsCoeff = 0.1;
-  constexpr double deltaT = 0.1;
-
   cv::Mat gradX, gradY;
   cv::Sobel(src, gradX, CV_64F, 1, 0, 3);
   cv::Sobel(src, gradY, CV_64F, 0, 1, 3);
@@ -57,7 +58,7 @@ int main(int argc, char *argv[])
   auto pixelSet = mat2PixelSet(src);
   const auto active = pixelSet.countActivePixels();
 
-  while (pixelSet.countActivePixels() > active * 0.01) {
+  while (pixelSet.countActivePixels() > active * movingLimit) {
     pixelSet.move();
     std::cout << pixelSet.countActivePixels() << std::endl;
   }
