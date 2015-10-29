@@ -4,7 +4,7 @@
 #include <opencv2/highgui.hpp>
 #include "pixel.hpp"
 
-pixel::PixelSet genPixelSet(const cv::Mat &src)
+pixel::PixelSet mat2PixelSet(const cv::Mat &src)
 {
   constexpr double epsCoeff = 0.1;
   constexpr double deltaT = 0.1;
@@ -29,7 +29,15 @@ pixel::PixelSet genPixelSet(const cv::Mat &src)
             pixel::Vector(index.x, index.y),
             pixel::Vector(gradX.at<double>(index), gradY.at<double>(index)) * deltaT));
 
-  return pixel::PixelSet(pixels);
+  return pixel::PixelSet(src.size().width, src.size().height, pixels);
+}
+
+cv::Mat pixelSet2Mat(const pixel::PixelSet &pixelSet)
+{
+  cv::Mat mat{cv::Size(pixelSet.width(), pixelSet.height()), CV_8U, cv::Scalar(0)};
+  for (const auto &p : pixelSet.allPixels())
+    mat.at<uchar>(p.pos()(1), p.pos()(0)) = 255;
+  return mat;
 }
 
 int main(int argc, char *argv[])
@@ -44,20 +52,15 @@ int main(int argc, char *argv[])
     return 1;
   }
   cv::Mat src;
-  raw.convertTo(src, CV_64F, 1.0 / 256);
+  raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
 
-  auto pixelSet = genPixelSet(src);
-  const auto active = pixelSet.countActives();
+  auto pixelSet = mat2PixelSet(src);
+  const auto active = pixelSet.countActivePixels();
 
-  while (pixelSet.countActives() > active * 0.1) {
+  while (pixelSet.countActivePixels() > active * 0.01) {
     pixelSet.move();
-    std::cout << pixelSet.countActives() << std::endl;
+    std::cout << pixelSet.countActivePixels() << std::endl;
   }
-
-  cv::imshow("input", src);
-
-  while (cv::waitKey(0) != 'q') {
-  };
 
   return 0;
 }

@@ -14,10 +14,9 @@ class PixelSet;
 
 class Pixel
 {
-  friend PixelSet;
-
 public:
-  Pixel(const Vector &p, const Vector &m);
+  Pixel(const Vector &pos, const Vector &moving);
+  Vector pos() const;
   bool isActive() const;
   void move();
   void check(const PixelSet &pixelSet);
@@ -30,10 +29,13 @@ private:
 class PixelSet
 {
 public:
-  PixelSet(const std::vector<Pixel> &pixels);
+  PixelSet(const size_t &width, const size_t &height, const std::vector<Pixel> &pixels);
   std::list<Pixel> findNeighbors(const Vector &p, const double &r) const;
   void move();
-  size_t countActives() const;
+  size_t countActivePixels() const;
+  std::vector<Pixel> allPixels() const;
+  size_t width() const;
+  size_t height() const;
 
 private:
   struct CmpVector {
@@ -44,7 +46,8 @@ private:
     }
   };
 
-  size_t active;
+  size_t w, h;
+  size_t actives;
   std::vector<Pixel> pixels;
   std::map<Vector, std::list<Pixel>, CmpVector> pixelMap;
 };
