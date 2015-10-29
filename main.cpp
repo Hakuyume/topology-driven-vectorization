@@ -46,9 +46,15 @@ int main(int argc, char *argv[])
   cv::Mat src;
   raw.convertTo(src, CV_64F, 1.0 / 256);
 
-  cv::imshow("input", src);
-
   auto pixelSet = genPixelSet(src);
+  const auto active = pixelSet.countActives();
+
+  while (pixelSet.countActives() > active * 0.1) {
+    pixelSet.move();
+    std::cout << pixelSet.countActives() << std::endl;
+  }
+
+  cv::imshow("input", src);
 
   while (cv::waitKey(0) != 'q') {
   };
