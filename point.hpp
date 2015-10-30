@@ -24,8 +24,10 @@ public:
 
     for (int dx = -ceil(r); dx <= ceil(r); dx++)
       for (int dy = -ceil(r); dy <= ceil(r); dy++) {
-        const auto range = map.equal_range(p + Vector(dx, dy));
-        for (auto it = range.first; it != std::next(range.second, 1); it++)
+        const auto key = p + Vector(dx, dy);
+        const auto begin = map.lower_bound(key);
+        const auto end = map.upper_bound(key);
+        for (auto it = begin; it != end; it++)
           if (((*it->second)() - p).norm() < r)
             neighbors.push_back(it->second);
       }

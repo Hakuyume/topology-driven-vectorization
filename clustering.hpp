@@ -1,7 +1,10 @@
 #pragma once
 
+#include <opencv2/core.hpp>
 #include "point.hpp"
 
+namespace clustering
+{
 class Pixel
 {
 public:
@@ -12,7 +15,9 @@ public:
   void check(const point::Map<std::vector<Pixel>::iterator> &map);
 
 private:
-  point::Vector p,
-      m;
+  point::Vector p, m;
   bool active;
 };
+
+std::vector<Pixel> clustering(const cv::Mat &src, const double &epsCoeff, const double &deltaT, const double &movingLimit);
+}
