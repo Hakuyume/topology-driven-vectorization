@@ -8,8 +8,8 @@ constexpr double epsCoeff{0.1};
 constexpr double deltaT{0.1};
 constexpr double movingLimit{0.01};
 
-pixel::PixelSet mat2PixelSet(const cv::Mat &src);
-cv::Mat pixelSet2Mat(const cv::Size &size, const pixel::PixelSet &pixelSet);
+std::vector<Pixel> extractPixels(const cv::Mat &src);
+size_t countActivePixels(const std::vector<Pixel> &pixels);
 
 int main(int argc, char *argv[])
 {
@@ -25,26 +25,34 @@ int main(int argc, char *argv[])
   cv::Mat src;
   raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
 
-  auto pixelSet = mat2PixelSet(src);
-  const auto active = pixelSet.countActivePixels();
+  auto pixels = extractPixels(src);
+  const auto initialActives = countActivePixels(pixels);
+  auto actives = initialActives;
 
-  while (pixelSet.countActivePixels() > active * movingLimit) {
-    std::cerr << "moving: " << pixelSet.countActivePixels() << " pixels" << std::endl;
-    pixelSet.updatePixels();
+  while (actives > initialActives * movingLimit) {
+    std::cerr << "moving: " << actives << " pixels" << std::endl;
+
+    const point::Map<std::vector<Pixel>::iterator> map{pixels.begin(), pixels.end()};
+    for (auto &p : pixels)
+      p.check(map);
+    for (auto &p : pixels)
+      p.move();
+
+    actives = countActivePixels(pixels);
   }
 
-  auto result = pixelSet2Mat(src.size(), pixelSet);
+  cv::Mat result{src.size(), CV_8U, cv::Scalar(0)};
+  for (const auto &p : pixels)
+    if (not p.isActive())
+      result.at<uchar>(p()(1), p()(0)) = 255;
 
-  cv::imshow("input", src);
-  cv::imshow("ouput", result);
-
-  while (cv::waitKey(0) != 'q') {
-  }
+  cv::imshow("result", result);
+  cv::waitKey(0);
 
   return 0;
 }
 
-pixel::PixelSet mat2PixelSet(const cv::Mat &src)
+std::vector<Pixel> extractPixels(const cv::Mat &src)
 {
   cv::Mat gradX, gradY;
   cv::Sobel(src, gradX, CV_64F, 1, 0, 3);
@@ -59,21 +67,21 @@ pixel::PixelSet mat2PixelSet(const cv::Mat &src)
   std::vector<cv::Point> movingIndexes;
   cv::findNonZero(gradMag > eps, movingIndexes);
 
-  std::vector<pixel::Pixel> pixels;
+  std::vector<Pixel> pixels;
   for (const auto &index : movingIndexes)
     pixels.push_back(
-        pixel::Pixel(
-            pixel::Vector(index.x, index.y),
-            pixel::Vector(gradX.at<double>(index), gradY.at<double>(index)) * deltaT));
+        Pixel(
+            point::Vector(index.x, index.y),
+            point::Vector(gradX.at<double>(index), gradY.at<double>(index)) * deltaT));
 
-  return pixel::PixelSet(pixels);
+  return pixels;
 }
 
-cv::Mat pixelSet2Mat(const cv::Size &size, const pixel::PixelSet &pixelSet)
+size_t countActivePixels(const std::vector<Pixel> &pixels)
 {
-  cv::Mat mat{size, CV_8U, cv::Scalar(0)};
-  for (const auto &p : pixelSet.allPixels())
-    if (not p.isActive())
-      mat.at<uchar>(p.pos()(1), p.pos()(0)) = 255;
-  return mat;
+  size_t count = 0;
+  for (const auto &p : pixels)
+    if (p.isActive())
+      count++;
+  return count;
 }
