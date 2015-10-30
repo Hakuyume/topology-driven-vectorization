@@ -11,8 +11,7 @@ public:
   Pixel(const point::Vector &pos, const point::Vector &moving);
   point::Vector operator()() const;
   bool isActive() const;
-  void move();
-  void check(const point::Map<std::vector<Pixel>::iterator> &map);
+  void update(const point::Map<Pixel> &map);
 
 private:
   point::Vector p, m;

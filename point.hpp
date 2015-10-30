@@ -12,10 +12,11 @@ template <class T>
 class Map
 {
 public:
-  Map(const T &begin, const T &end)
+  template <class C>
+  Map(const C &points)
   {
-    for (auto it = begin; it != end; it++)
-      map.insert({ (*it)(), it});
+    for (const auto &p : points)
+      map.insert({p(), p});
   }
 
   std::vector<T> find(const Vector &p, const double &r) const
@@ -28,7 +29,7 @@ public:
         const auto begin = map.lower_bound(key);
         const auto end = map.upper_bound(key);
         for (auto it = begin; it != end; it++)
-          if (((*it->second)() - p).norm() < r)
+          if ((it->second() - p).norm() < r)
             neighbors.push_back(it->second);
       }
 

@@ -19,22 +19,18 @@ bool Pixel::isActive() const
   return active;
 }
 
-void Pixel::move()
-{
-  if (active)
-    p += m;
-}
-
-void Pixel::check(const point::Map<std::vector<Pixel>::iterator> &map)
+void Pixel::update(const point::Map<Pixel> &map)
 {
   if (not active)
     return;
 
   for (const auto &q : map.find(p, 1))
-    if (m.dot(q->m) < 0) {
+    if (m.dot(q.m) < 0) {
       active = false;
       return;
     }
+
+  p += m;
 }
 
 size_t countActivePixels(const std::vector<Pixel> &pixels)
@@ -74,11 +70,9 @@ std::vector<Pixel> clustering::clustering(const cv::Mat &src, const double &epsC
   while (actives > initialActives * movingLimit) {
     std::cerr << "moving: " << actives << " pixels" << std::endl;
 
-    const point::Map<std::vector<Pixel>::iterator> map{pixels.begin(), pixels.end()};
+    const point::Map<Pixel> map{pixels};
     for (auto &p : pixels)
-      p.check(map);
-    for (auto &p : pixels)
-      p.move();
+      p.update(map);
 
     actives = countActivePixels(pixels);
   }
