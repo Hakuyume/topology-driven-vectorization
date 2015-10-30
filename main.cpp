@@ -4,9 +4,9 @@
 #include <opencv2/highgui.hpp>
 #include "pixel.hpp"
 
-constexpr double epsCoeff = 0.1;
-constexpr double deltaT = 0.1;
-constexpr double movingLimit = 0.01;
+constexpr double epsCoeff{0.1};
+constexpr double deltaT{0.1};
+constexpr double movingLimit{0.01};
 
 pixel::PixelSet mat2PixelSet(const cv::Mat &src);
 cv::Mat pixelSet2Mat(const cv::Size &size, const pixel::PixelSet &pixelSet);
