@@ -12,11 +12,20 @@ template <class T>
 class Map
 {
 public:
+  Map()
+  {
+  }
+
   template <class C>
   Map(const C &points)
   {
     for (const auto &p : points)
       map.insert({p(), p});
+  }
+
+  void push(const T &p)
+  {
+    map.insert({p(), p});
   }
 
   std::vector<T> find(const Vector &p, const double &r) const
