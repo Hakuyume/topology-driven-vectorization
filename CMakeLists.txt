@@ -3,7 +3,7 @@ project(vectorize)
 
 add_definitions("-Wall -std=c++11 -O2")
 
-add_executable(${PROJECT_NAME} main.cpp clustering.cpp)
+add_executable(${PROJECT_NAME} main.cpp move_pixels.cpp)
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})

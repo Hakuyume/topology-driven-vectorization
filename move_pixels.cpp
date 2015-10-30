@@ -1,8 +1,8 @@
 #include <iostream>
 #include <opencv2/imgproc.hpp>
-#include "clustering.hpp"
+#include "move_pixels.hpp"
 
-using namespace clustering;
+using namespace movePixels;
 
 Pixel::Pixel(const point::Vector &p, const point::Vector &m)
     : p{p}, m{m}, active{true}
@@ -42,7 +42,7 @@ size_t countActivePixels(const std::vector<Pixel> &pixels)
   return count;
 }
 
-std::vector<Pixel> clustering::clustering(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit)
+std::vector<Pixel> movePixels::movePixels(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit)
 {
   cv::Mat grad_x, grad_y;
   cv::Sobel(src, grad_x, CV_64F, 1, 0, 3);

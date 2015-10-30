@@ -3,7 +3,7 @@
 #include <opencv2/core.hpp>
 #include "point.hpp"
 
-namespace clustering
+namespace movePixels
 {
 class Pixel
 {
@@ -18,5 +18,5 @@ private:
   bool active;
 };
 
-std::vector<Pixel> clustering(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit);
+std::vector<Pixel> movePixels(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit);
 }

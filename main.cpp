@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
   }
   cv::Mat src;
   raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
+  const auto pixels = movePixels::movePixels(src, eps_coeff, delta_t, moving_limit);
 
-  const auto pixels = clustering::clustering(src, eps_coeff, delta_t, moving_limit);
 
   cv::Mat result{src.size(), CV_8U, cv::Scalar(0)};
   for (const auto &p : pixels)
