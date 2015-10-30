@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
   const auto active = pixelSet.countActivePixels();
 
   while (pixelSet.countActivePixels() > active * movingLimit) {
-    pixelSet.move();
-    std::cout << pixelSet.countActivePixels() << std::endl;
+    std::cerr << "moving: " << pixelSet.countActivePixels() << " pixels" << std::endl;
+    pixelSet.updatePixels();
   }
 
   auto result = pixelSet2Mat(src.size(), pixelSet);

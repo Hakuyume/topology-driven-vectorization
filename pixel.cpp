@@ -2,6 +2,10 @@
 
 using namespace pixel;
 
+Pixel::Pixel()
+{
+}
+
 Pixel::Pixel(const Vector &pos, const Vector &moving)
     : p{pos}, m{moving}, active{true}
 {
@@ -28,7 +32,7 @@ void Pixel::check(const PixelSet &pixelSet)
   if (not active)
     return;
 
-  for (const auto &q : pixelSet.findNeighbors(p, 1))
+  for (const auto &q : pixelSet.findNeighborPixels(p, 1))
     if (m.dot(q.m) < 0) {
       active = false;
       return;
@@ -38,13 +42,27 @@ void Pixel::check(const PixelSet &pixelSet)
 PixelSet::PixelSet(const std::vector<Pixel> &pixels)
     : pixels{pixels}
 {
-  actives = 0;
-  for (auto &p : pixels)
-    if (p.isActive())
-      actives++;
+  updateInfo();
 }
 
-std::list<Pixel> PixelSet::findNeighbors(const Vector &p, const double &r) const
+void PixelSet::updateInfo()
+{
+  actives = 0;
+  pixelMap.clear();
+
+  for (const auto &p : pixels) {
+    if (p.isActive())
+      actives++;
+
+    const auto it = pixelMap.find(p.pos());
+    if (it == pixelMap.end())
+      pixelMap.insert({p.pos(), {p}});
+    else
+      it->second.push_back(p);
+  }
+}
+
+std::list<Pixel> PixelSet::findNeighborPixels(const Vector &p, const double &r) const
 {
   std::list<Pixel> neighbors;
 
@@ -63,26 +81,15 @@ std::list<Pixel> PixelSet::findNeighbors(const Vector &p, const double &r) const
   return neighbors;
 }
 
-void PixelSet::move()
+void PixelSet::updatePixels()
 {
-  pixelMap.clear();
-  for (const auto &p : pixels) {
-    const auto it = pixelMap.find(p.pos());
-    if (it == pixelMap.end())
-      pixelMap.insert({p.pos(), {p}});
-    else
-      it->second.push_back(p);
-  }
-
-  actives = 0;
-  for (auto &p : pixels) {
+  for (auto &p : pixels)
     p.check(*this);
-    if (p.isActive())
-      actives++;
-  }
 
   for (auto &p : pixels)
     p.move();
+
+  updateInfo();
 }
 
 size_t PixelSet::countActivePixels() const

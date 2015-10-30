@@ -15,6 +15,7 @@ class PixelSet;
 class Pixel
 {
 public:
+  Pixel();
   Pixel(const Vector &pos, const Vector &moving);
   Vector pos() const;
   bool isActive() const;
@@ -30,8 +31,8 @@ class PixelSet
 {
 public:
   PixelSet(const std::vector<Pixel> &pixels);
-  std::list<Pixel> findNeighbors(const Vector &p, const double &r) const;
-  void move();
+  std::list<Pixel> findNeighborPixels(const Vector &p, const double &r) const;
+  void updatePixels();
   size_t countActivePixels() const;
   std::vector<Pixel> allPixels() const;
 
@@ -49,5 +50,6 @@ private:
   size_t actives;
   std::vector<Pixel> pixels;
   std::map<Vector, std::list<Pixel>, CmpVector> pixelMap;
+  void updateInfo();
 };
 }
