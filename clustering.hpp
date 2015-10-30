@@ -18,5 +18,5 @@ private:
   bool active;
 };
 
-std::vector<Pixel> clustering(const cv::Mat &src, const double &epsCoeff, const double &deltaT, const double &movingLimit);
+std::vector<Pixel> clustering(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit);
 }

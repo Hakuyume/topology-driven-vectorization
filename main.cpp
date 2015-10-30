@@ -4,9 +4,9 @@
 #include <opencv2/highgui.hpp>
 #include "clustering.hpp"
 
-constexpr double epsCoeff{0.1};
-constexpr double deltaT{0.1};
-constexpr double movingLimit{0.01};
+constexpr double eps_coeff{0.1};
+constexpr double delta_t{0.1};
+constexpr double moving_limit{0.01};
 int main(int argc, char *argv[])
 {
   if (argc < 2) {
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   cv::Mat src;
   raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
 
-  const auto pixels = clustering::clustering(src, epsCoeff, deltaT, movingLimit);
+  const auto pixels = clustering::clustering(src, eps_coeff, delta_t, moving_limit);
 
   cv::Mat result{src.size(), CV_8U, cv::Scalar(0)};
   for (const auto &p : pixels)

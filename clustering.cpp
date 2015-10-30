@@ -42,32 +42,32 @@ size_t countActivePixels(const std::vector<Pixel> &pixels)
   return count;
 }
 
-std::vector<Pixel> clustering::clustering(const cv::Mat &src, const double &epsCoeff, const double &deltaT, const double &movingLimit)
+std::vector<Pixel> clustering::clustering(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit)
 {
-  cv::Mat gradX, gradY;
-  cv::Sobel(src, gradX, CV_64F, 1, 0, 3);
-  cv::Sobel(src, gradY, CV_64F, 0, 1, 3);
+  cv::Mat grad_x, grad_y;
+  cv::Sobel(src, grad_x, CV_64F, 1, 0, 3);
+  cv::Sobel(src, grad_y, CV_64F, 0, 1, 3);
 
-  cv::Mat gradMag;
-  cv::magnitude(gradX, gradY, gradMag);
-  double gradMax;
-  cv::minMaxLoc(gradMag, NULL, &gradMax, NULL, NULL);
+  cv::Mat grad_mag;
+  cv::magnitude(grad_x, grad_y, grad_mag);
+  double grad_max;
+  cv::minMaxLoc(grad_mag, NULL, &grad_max, NULL, NULL);
 
-  const auto eps = gradMax * epsCoeff;
-  std::vector<cv::Point> movingIndexes;
-  cv::findNonZero(gradMag > eps, movingIndexes);
+  const auto eps = grad_max * eps_coeff;
+  std::vector<cv::Point> moving_indexes;
+  cv::findNonZero(grad_mag > eps, moving_indexes);
 
   std::vector<Pixel> pixels;
-  for (const auto &index : movingIndexes)
+  for (const auto &index : moving_indexes)
     pixels.push_back(
         Pixel(
             point::Vector(index.x, index.y),
-            point::Vector(gradX.at<double>(index), gradY.at<double>(index)) * deltaT));
+            point::Vector(grad_x.at<double>(index), grad_y.at<double>(index)) * delta_t));
 
-  const auto initialActives = countActivePixels(pixels);
-  auto actives = initialActives;
+  const auto initial_actives = countActivePixels(pixels);
+  auto actives = initial_actives;
 
-  while (actives > initialActives * movingLimit) {
+  while (actives > initial_actives * moving_limit) {
     std::cerr << "moving: " << actives << " pixels" << std::endl;
 
     const point::Map<Pixel> map{pixels};
@@ -77,10 +77,10 @@ std::vector<Pixel> clustering::clustering(const cv::Mat &src, const double &epsC
     actives = countActivePixels(pixels);
   }
 
-  std::vector<Pixel> inactivePixels;
+  std::vector<Pixel> inactive_pixels;
   for (const auto &p : pixels)
     if (not p.isActive())
-      inactivePixels.push_back(p);
+      inactive_pixels.push_back(p);
 
-  return inactivePixels;
+  return inactive_pixels;
 }
