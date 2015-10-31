@@ -25,7 +25,7 @@ void Pixel::update(const point::Map<Pixel> &map)
     return;
 
   for (const auto &q : map.find(p, 1))
-    if (m.dot(q.m) < 0) {
+    if (m.dot(q.m) < 0 and m.dot(q.p - p) < 0) {
       active = false;
       return;
     }
