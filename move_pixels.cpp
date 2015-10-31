@@ -77,10 +77,16 @@ std::vector<Pixel> movePixels::movePixels(const cv::Mat &src, const double &eps_
     actives = countActivePixels(pixels);
   }
 
+  const point::Map<Pixel> map{pixels};
   std::vector<Pixel> inactive_pixels;
-  for (const auto &p : pixels)
-    if (not p.isActive())
-      inactive_pixels.push_back(p);
+
+  for (const auto &p : pixels) {
+    if (p.isActive())
+      continue;
+    if (map.find(p(), 1).size() < 3)
+      continue;
+    inactive_pixels.push_back(p);
+  }
 
   return inactive_pixels;
 }
