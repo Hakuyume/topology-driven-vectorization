@@ -18,5 +18,15 @@ private:
   bool active;
 };
 
-std::vector<Pixel> movePixels(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit);
+class PixelSet
+{
+public:
+  PixelSet(const cv::Mat &src, const double &eps_coeff, const double &delta_t);
+  size_t countActivePixels() const;
+  void movePixels(const double &moving_limit);
+  std::vector<Pixel> getValidPixels() const;
+
+private:
+  std::vector<Pixel> pixels;
+};
 }

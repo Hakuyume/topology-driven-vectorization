@@ -33,16 +33,7 @@ void Pixel::update(const point::Map<Pixel> &map)
   p += m;
 }
 
-size_t countActivePixels(const std::vector<Pixel> &pixels)
-{
-  size_t count = 0;
-  for (const auto &p : pixels)
-    if (p.isActive())
-      count++;
-  return count;
-}
-
-std::vector<Pixel> movePixels::movePixels(const cv::Mat &src, const double &eps_coeff, const double &delta_t, const double &moving_limit)
+PixelSet::PixelSet(const cv::Mat &src, const double &eps_coeff, const double &delta_t)
 {
   cv::Mat grad_x, grad_y;
   cv::Sobel(src, grad_x, CV_64F, 1, 0, 3);
@@ -57,14 +48,25 @@ std::vector<Pixel> movePixels::movePixels(const cv::Mat &src, const double &eps_
   std::vector<cv::Point> moving_indexes;
   cv::findNonZero(grad_mag > eps, moving_indexes);
 
-  std::vector<Pixel> pixels;
   for (const auto &index : moving_indexes)
     pixels.push_back(
         Pixel(
             point::Vector(index.x, index.y),
             point::Vector(grad_x.at<double>(index), grad_y.at<double>(index)) * delta_t));
+}
 
-  const auto initial_actives = countActivePixels(pixels);
+size_t PixelSet::countActivePixels() const
+{
+  size_t count = 0;
+  for (const auto &p : pixels)
+    if (p.isActive())
+      count++;
+  return count;
+}
+
+void PixelSet::movePixels(const double &moving_limit)
+{
+  const auto initial_actives = countActivePixels();
   auto actives = initial_actives;
 
   while (actives > initial_actives * moving_limit) {
@@ -74,19 +76,22 @@ std::vector<Pixel> movePixels::movePixels(const cv::Mat &src, const double &eps_
     for (auto &p : pixels)
       p.update(map);
 
-    actives = countActivePixels(pixels);
+    actives = countActivePixels();
   }
+}
 
+std::vector<Pixel> PixelSet::getValidPixels() const
+{
   const point::Map<Pixel> map{pixels};
-  std::vector<Pixel> inactive_pixels;
+  std::vector<Pixel> valid_pixels;
 
   for (const auto &p : pixels) {
     if (p.isActive())
       continue;
     if (map.find(p(), 1).size() < 3)
       continue;
-    inactive_pixels.push_back(p);
+    valid_pixels.push_back(p);
   }
 
-  return inactive_pixels;
+  return valid_pixels;
 }

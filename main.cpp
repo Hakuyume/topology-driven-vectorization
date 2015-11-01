@@ -38,8 +38,9 @@ int main(int argc, char *argv[])
   cv::Mat src;
   raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
 
-  const auto pixels = movePixels::movePixels(src, eps_coeff, delta_t, moving_limit);
-
+  movePixels::PixelSet pixelSet{src, eps_coeff, delta_t};
+  pixelSet.movePixels(moving_limit);
+  const auto pixels = pixelSet.getValidPixels();
   Graph graph;
   point::Map<Vertex> map;
   for (const auto &p : pixels) {
