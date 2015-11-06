@@ -1,4 +1,3 @@
-#include <iostream>
 #include <opencv2/imgproc.hpp>
 #include "move_pixels.hpp"
 
@@ -64,19 +63,12 @@ size_t PixelSet::countActivePixels() const
   return count;
 }
 
-void PixelSet::movePixels(const double &moving_limit)
+void PixelSet::movePixels(const size_t &limit)
 {
-  const auto initial_actives = countActivePixels();
-  auto actives = initial_actives;
-
-  while (actives > initial_actives * moving_limit) {
-    std::cerr << "moving: " << actives << " pixels" << std::endl;
-
+  while (countActivePixels() > limit) {
     const point::Map<Pixel> map{pixels};
     for (auto &p : pixels)
       p.update(map);
-
-    actives = countActivePixels();
   }
 }
 

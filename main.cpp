@@ -39,7 +39,10 @@ int main(int argc, char *argv[])
   raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
 
   movePixels::PixelSet pixelSet{src, eps_coeff, delta_t};
-  pixelSet.movePixels(moving_limit);
+  std::cerr << "extract " << pixelSet.countActivePixels() << " pixels" << std::endl;
+  std::cerr << "moving pixels ... ";
+  pixelSet.movePixels(pixelSet.countActivePixels() * moving_limit);
+  std::cerr << "done" << std::endl;
   const auto pixels = pixelSet.getValidPixels();
   Graph graph;
   point::Map<Vertex> map;
