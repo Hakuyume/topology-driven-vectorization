@@ -16,8 +16,8 @@ public:
   {
   }
 
-  template <class C>
-  Map(const C &points)
+  template <class Container>
+  Map(const Container &points)
   {
     for (const auto &p : points)
       push(p);
