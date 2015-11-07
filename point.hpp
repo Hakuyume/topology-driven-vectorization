@@ -23,6 +23,11 @@ public:
       push(p);
   }
 
+  size_t size() const
+  {
+    return map.size();
+  }
+
   void push(const T &p)
   {
     map.insert({p(), p});
