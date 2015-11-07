@@ -16,13 +16,77 @@ using Graph = boost::adjacency_list<boost::vecS,
                                     boost::undirectedS,
                                     Vertex,
                                     boost::property<boost::edge_weight_t, double>>;
-
+using VertexDescriptor = boost::graph_traits<Graph>::vertex_descriptor;
+using EdgeDescriptor = boost::graph_traits<Graph>::edge_descriptor;
 struct Vertex {
   size_t id;
   point::Vector p;
-  Graph::vertex_descriptor desc;
   point::Vector operator()() const { return p; }
 };
+
+Graph pixels2Graph(const std::vector<movePixels::Pixel> &pixels)
+{
+  Graph graph;
+  point::Map<Vertex> map;
+  for (const auto &p : pixels) {
+    const auto desc = boost::add_vertex(graph);
+    graph[desc].id = desc;
+    graph[desc].p = p();
+    map.push(graph[desc]);
+  }
+
+  const auto range = boost::vertices(graph);
+  for (auto it = range.first; it != range.second; it++) {
+    const auto &v = graph[*it];
+    for (const auto &w : map.find(v(), 1)) {
+      if (v.id == w.id)
+        continue;
+      const auto res = boost::add_edge(v.id, w.id, graph);
+      if (res.second)
+        boost::put(boost::edge_weight, graph, res.first, (w() - v()).norm());
+    }
+  }
+
+  return graph;
+}
+
+Graph genMST(const Graph &graph)
+{
+  std::vector<EdgeDescriptor> mst_edges;
+  boost::kruskal_minimum_spanning_tree(graph, std::back_inserter(mst_edges));
+
+  Graph mst;
+  const auto range = boost::vertices(graph);
+  for (auto it = range.first; it != range.second; it++) {
+    const auto desc = boost::add_vertex(mst);
+    mst[desc] = graph[*it];
+  }
+
+  for (const auto &desc : mst_edges) {
+    const auto res = boost::add_edge(boost::source(desc, graph), boost::target(desc, graph), mst);
+    boost::put(boost::edge_weight, mst, res.first, boost::get(boost::edge_weight, graph, desc));
+  }
+
+  return mst;
+}
+
+void printSVG(const Graph &graph)
+{
+  std::cout << "<?xml version=\"1.0\"?>" << std::endl;
+  std::cout << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << std::endl;
+  std::cout << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << std::endl;
+  std::cout << "<g stroke=\"black\" stroke-width=\"5\">" << std::endl;
+
+  const auto range = boost::edges(graph);
+  for (auto it = range.first; it != range.second; it++) {
+    const auto v = graph[boost::source(*it, graph)]();
+    const auto w = graph[boost::target(*it, graph)]();
+    std::cout << "<line x1=\"" << v(0) << "\" y1=\"" << v(1) << "\" x2=\"" << w(0) << "\" y2=\"" << w(1) << "\"/>" << std::endl;
+  }
+
+  std::cout << "</g>" << std::endl;
+  std::cout << "</svg>" << std::endl;
+}
 
 int main(int argc, char *argv[])
 {
@@ -44,45 +108,10 @@ int main(int argc, char *argv[])
   pixelSet.movePixels(pixelSet.countActivePixels() * moving_limit);
   std::cerr << "done" << std::endl;
   const auto pixels = pixelSet.getValidPixels();
-  Graph graph;
-  point::Map<Vertex> map;
-  for (const auto &p : pixels) {
-    const auto desc = boost::add_vertex(graph);
-    static size_t id = 0;
-    graph[desc].id = id++;
-    graph[desc].p = p();
-    graph[desc].desc = desc;
-    map.push(graph[desc]);
-  }
 
-  const auto range = boost::vertices(graph);
-  for (auto it = range.first; it != range.second; it++) {
-    const auto &v = graph[*it];
-    for (const auto &w : map.find(v.p, 1)) {
-      const auto res = boost::add_edge(v.desc, w.desc, graph);
-      if (res.second)
-        boost::put(boost::edge_weight, graph, res.first, (w.p - v.p).norm());
-    }
-  }
-
-  std::cerr << boost::num_edges(graph) << std::endl;
-
-  std::vector<boost::graph_traits<Graph>::edge_descriptor> spanning_tree;
-  boost::kruskal_minimum_spanning_tree(graph, std::back_inserter(spanning_tree));
-
-  std::cout << "graph topology {" << std::endl;
-  std::cout << "node [ shape=circle ];" << std::endl;
-  for (auto it = range.first; it != range.second; it++) {
-    const auto &v = graph[*it];
-    std::cout << v.id << " [ pos=\"" << v()(0) * 100 << "," << -v()(1) * 100 << "!\", label=\"\" ];" << std::endl;
-  }
-  for (const auto &desc : spanning_tree) {
-    const auto &v = graph[boost::source(desc, graph)];
-    const auto &w = graph[boost::target(desc, graph)];
-    std::cout << v.id << " -- " << w.id << ";" << std::endl;
-  }
-
-  std::cout << "}" << std::endl;
+  auto graph = pixels2Graph(pixels);
+  auto mst = genMST(graph);
+  printSVG(mst);
 
   return 0;
 }
