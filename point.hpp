@@ -20,7 +20,7 @@ public:
   Map(const C &points)
   {
     for (const auto &p : points)
-      map.insert({p(), p});
+      push(p);
   }
 
   void push(const T &p)
