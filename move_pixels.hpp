@@ -11,11 +11,13 @@ public:
   Pixel(const point::Vector &pos, const point::Vector &moving);
   point::Vector operator()() const;
   bool isActive() const;
+  double traveledDistance() const;
   void update(const point::Map<Pixel> &map);
 
 private:
   point::Vector p, m;
   bool active;
+  unsigned int step;
 };
 
 class PixelSet

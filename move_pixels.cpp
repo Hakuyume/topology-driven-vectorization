@@ -4,7 +4,7 @@
 using namespace movePixels;
 
 Pixel::Pixel(const point::Vector &p, const point::Vector &m)
-    : p{p}, m{m}, active{true}
+    : p{p}, m{m}, active{true}, step{0}
 {
 }
 
@@ -16,6 +16,11 @@ point::Vector Pixel::operator()() const
 bool Pixel::isActive() const
 {
   return active;
+}
+
+double Pixel::traveledDistance() const
+{
+  return m.norm() * step;
 }
 
 void Pixel::update(const point::Map<Pixel> &map)
@@ -30,6 +35,7 @@ void Pixel::update(const point::Map<Pixel> &map)
     }
 
   p += m;
+  step++;
 }
 
 PixelSet::PixelSet(const cv::Mat &src, const double &eps_coeff, const double &delta_t)
