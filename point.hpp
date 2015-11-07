@@ -30,7 +30,7 @@ public:
 
   void push(const T &p)
   {
-    map.insert({p(), p});
+    map.emplace(p(), p);
   }
 
   std::vector<T> find(const Vector &p, const double &r) const
