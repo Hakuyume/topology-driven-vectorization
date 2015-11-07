@@ -38,7 +38,7 @@ public:
         const auto begin = map.lower_bound(key);
         const auto end = map.upper_bound(key);
         for (auto it = begin; it != end; it++)
-          if ((it->second() - p).norm() < r)
+          if ((it->second() - p).norm() <= r)
             neighbors.push_back(it->second);
       }
 
