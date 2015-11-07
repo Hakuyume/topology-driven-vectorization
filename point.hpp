@@ -40,9 +40,8 @@ public:
     for (int dx = -ceil(r); dx <= ceil(r); dx++)
       for (int dy = -ceil(r); dy <= ceil(r); dy++) {
         const auto key = p + Vector(dx, dy);
-        const auto begin = map.lower_bound(key);
-        const auto end = map.upper_bound(key);
-        for (auto it = begin; it != end; it++)
+        const auto range = map.equal_range(key);
+        for (auto it = range.first; it != range.second; it++)
           if ((it->second() - p).norm() <= r)
             neighbors.push_back(it->second);
       }
