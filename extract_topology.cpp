@@ -6,25 +6,37 @@
 
 using namespace extractTopology;
 
-void extractTopology::addVertex(Graph &graph, const point::Vector &p, const double &thickness)
+Vertex::Vertex()
 {
-  const auto desc = boost::add_vertex(graph);
-  graph[desc].p = p;
-  graph[desc].length = 0;
-  graph[desc].thickness = thickness;
-  graph[desc].desc = desc;
 }
 
-void extractTopology::addEdges(Graph &graph)
+point::Vector Vertex::operator()() const
 {
-  point::Map<Vertex> map;
-  const auto vertices = boost::vertices(graph);
-  for (auto it = vertices.first; it != vertices.second; it++) {
-    const auto &v = graph[*it];
-    for (const auto &u : map.find(v(), 1))
-      boost::add_edge(v.desc, u.desc, (u() - v()).norm(), graph);
-    map.push(v);
-  }
+  return p;
+}
+
+double Vertex::thickness() const
+{
+  return t;
+}
+
+VertexDescriptor Vertex::desc() const
+{
+  return v_desc;
+}
+
+bool Vertex::isRemovable(const Graph &graph) const
+{
+  return l <= t and boost::out_degree(v_desc, graph) == 1;
+}
+
+bool Vertex::updateLength(const Vertex &v)
+{
+  const auto r = (v.p - p).norm();
+  if (v.l + r <= l)
+    return false;
+  l = v.l + r;
+  return true;
 }
 
 Graph extractTopology::getMST(const Graph &graph)
@@ -51,16 +63,12 @@ Graph extractTopology::getMST(const Graph &graph)
 void pruneBranch(Graph &graph, const VertexDescriptor &v_desc)
 {
   auto &v = graph[v_desc];
-  if (v.length > v.thickness)
-    return;
-  if (boost::out_degree(v_desc, graph) != 1)
+  if (not v.isRemovable(graph))
     return;
   const auto &edge = *(boost::out_edges(v_desc, graph).first);
   const auto u_desc = boost::target(edge, graph);
   auto &u = graph[u_desc];
-  const auto r = (v() - u()).norm();
-  if (v.length + r > u.length)
-    u.length = v.length + r;
+  u.updateLength(v);
   boost::remove_edge(edge, graph);
   pruneBranch(graph, u_desc);
 }

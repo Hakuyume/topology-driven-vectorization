@@ -10,8 +10,8 @@ class Pixel
 public:
   Pixel(const point::Vector &pos, const point::Vector &moving);
   point::Vector operator()() const;
+  double thickness() const;
   bool isActive() const;
-  double traveledDistance() const;
   void update(const point::Map<Pixel> &map);
 
 private:

@@ -68,14 +68,13 @@ int main(int argc, char *argv[])
   std::cerr << "done" << std::endl;
   const auto pixels = pixelSet.getValidPixels();
 
-  extractTopology::Graph graph;
-  for (const auto &p : pixels)
-    extractTopology::addVertex(graph, p(), p.traveledDistance());
-  extractTopology::addEdges(graph);
+  auto graph = extractTopology::createGraph(pixels);
   auto mst = extractTopology::getMST(graph);
   extractTopology::pruneBranches(mst);
+  const auto paths = extractTopology::getPaths(mst);
 
   printSVG(mst, extractTopology::getPaths(mst));
+  printSVG(mst, paths);
 
   return 0;
 }

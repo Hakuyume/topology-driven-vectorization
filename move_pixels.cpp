@@ -13,14 +13,14 @@ point::Vector Pixel::operator()() const
   return p;
 }
 
+double Pixel::thickness() const
+{
+  return m.norm() * step;
+}
+
 bool Pixel::isActive() const
 {
   return active;
-}
-
-double Pixel::traveledDistance() const
-{
-  return m.norm() * step;
 }
 
 void Pixel::update(const point::Map<Pixel> &map)
