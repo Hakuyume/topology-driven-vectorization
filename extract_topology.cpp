@@ -20,10 +20,8 @@ void extractTopology::addEdges(Graph &graph)
   const auto vertices = boost::vertices(graph);
   for (auto it = vertices.first; it != vertices.second; it++) {
     const auto &v = graph[*it];
-    for (const auto &u : map.find(v(), 1)) {
-      const auto edge = boost::add_edge(v.desc, u.desc, graph).first;
-      boost::put(boost::edge_weight, graph, edge, (u() - v()).norm());
-    }
+    for (const auto &u : map.find(v(), 1))
+      boost::add_edge(v.desc, u.desc, (u() - v()).norm(), graph);
     map.push(v);
   }
 }
