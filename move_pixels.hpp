@@ -12,7 +12,7 @@ public:
   point::Vector operator()() const;
   double thickness() const;
   bool isActive() const;
-  void update(const point::Map<Pixel> &map);
+  void update(const point::Map<Pixel> &map, const size_t &width, const size_t &height);
 
 private:
   point::Vector p, m;
@@ -29,6 +29,7 @@ public:
   std::vector<Pixel> getValidPixels() const;
 
 private:
+  size_t width, height;
   std::vector<Pixel> pixels;
 };
 }

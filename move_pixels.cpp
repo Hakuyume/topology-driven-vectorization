@@ -23,10 +23,15 @@ bool Pixel::isActive() const
   return active;
 }
 
-void Pixel::update(const point::Map<Pixel> &map)
+void Pixel::update(const point::Map<Pixel> &map, const size_t &width, const size_t &height)
 {
   if (not active)
     return;
+
+  if (p(0) < 0 or width < p(0) or p(1) < 0 or height < p(1)) {
+    active = false;
+    return;
+  }
 
   for (const auto &q : map.find(p, 1))
     if (m.dot(q.m) < 0 and m.dot(q.p - p) < 0) {
@@ -39,6 +44,7 @@ void Pixel::update(const point::Map<Pixel> &map)
 }
 
 PixelSet::PixelSet(const cv::Mat &src, const double &eps_coeff, const double &delta_t)
+    : width{static_cast<size_t>(src.size().width)}, height{static_cast<size_t>(src.size().height)}
 {
   cv::Mat grad_x, grad_y;
   cv::Sobel(src, grad_x, CV_64F, 1, 0, 3);
@@ -74,7 +80,7 @@ void PixelSet::movePixels(const size_t &limit)
   while (countActivePixels() > limit) {
     const point::Map<Pixel> map{pixels};
     for (auto &p : pixels)
-      p.update(map);
+      p.update(map, width, height);
   }
 }
 
@@ -85,6 +91,8 @@ std::vector<Pixel> PixelSet::getValidPixels() const
 
   for (const auto &p : pixels) {
     if (p.isActive())
+      continue;
+    if (p()(0) < 0 or width < p()(0) or p()(1) < 0 or height < p()(1))
       continue;
     if (map.find(p(), 1).size() < 3)
       continue;
