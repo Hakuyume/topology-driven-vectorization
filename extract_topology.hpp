@@ -55,5 +55,5 @@ Graph createGraph(const Container &points)
 Graph getMST(const Graph &graph);
 void pruneBranches(Graph &graph);
 void skeletonize(Graph &graph);
-std::vector<std::vector<VertexDescriptor>> getPaths(Graph &graph);
+std::vector<std::vector<Vertex>> getPaths(Graph &graph);
 }
