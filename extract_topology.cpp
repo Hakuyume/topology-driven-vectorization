@@ -46,9 +46,7 @@ void pruneBranch(Graph &graph, const VertexDescriptor &v_desc)
   if (boost::out_degree(v_desc, graph) != 1)
     return;
   const auto &edge = *(boost::out_edges(v_desc, graph).first);
-  const auto u_desc = boost::source(edge, graph) != v_desc
-                          ? boost::source(edge, graph)
-                          : boost::target(edge, graph);
+  const auto u_desc = boost::target(edge, graph);
   auto &u = graph[u_desc];
   const auto r = (v() - u()).norm();
   if (v.length + r > u.length)
