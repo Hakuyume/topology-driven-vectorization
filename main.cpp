@@ -1,4 +1,5 @@
 #include <iostream>
+#include <boost/graph/copy.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -55,7 +56,11 @@ int main(int argc, char *argv[])
   auto mst = extractTopology::getMST(graph);
   extractTopology::pruneBranches(mst);
 
-  printSVG(mst);
+  extractTopology::Graph skeleton;
+  boost::copy_graph(mst, skeleton);
+  extractTopology::skeletonize(skeleton);
+
+  printSVG(skeleton);
 
   return 0;
 }

@@ -61,3 +61,19 @@ void extractTopology::pruneBranches(Graph &graph)
   for (auto it = vertices.first; it != vertices.second; it++)
     pruneBranch(graph, *it);
 }
+
+void extractTopology::skeletonize(Graph &graph)
+{
+  const auto vertices = boost::vertices(graph);
+  for (auto it = vertices.first; it != vertices.second; it++) {
+    if (boost::out_degree(*it, graph) != 2)
+      continue;
+    const auto &edge0 = *(boost::out_edges(*it, graph).first);
+    const auto u0_desc = boost::target(edge0, graph);
+    const auto &edge1 = *(boost::out_edges(*it, graph).first + 1);
+    const auto u1_desc = boost::target(edge1, graph);
+    boost::remove_edge(edge0, graph);
+    boost::remove_edge(edge1, graph);
+    boost::add_edge(u0_desc, u1_desc, graph);
+  }
+}

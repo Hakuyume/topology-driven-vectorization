@@ -42,4 +42,5 @@ void addVertex(Graph &graph, const point::Vector &p, const double &thickness);
 void addEdges(Graph &graph);
 Graph getMST(const Graph &graph);
 void pruneBranches(Graph &graph);
+void skeletonize(Graph &graph);
 }
