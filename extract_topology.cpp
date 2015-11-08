@@ -38,30 +38,28 @@ Graph extractTopology::getMST(const Graph &graph)
   return mst;
 }
 
+void pruneBranch(Graph &graph, const VertexDescriptor &v_desc)
+{
+  auto &v = graph[v_desc];
+  if (v.length > v.thickness)
+    return;
+  if (boost::out_degree(v_desc, graph) != 1)
+    return;
+  const auto &edge = *(boost::out_edges(v_desc, graph).first);
+  const auto u_desc = boost::source(edge, graph) != v_desc
+                          ? boost::source(edge, graph)
+                          : boost::target(edge, graph);
+  auto &u = graph[u_desc];
+  const auto r = (v() - u()).norm();
+  if (v.length + r > u.length)
+    u.length = v.length + r;
+  boost::remove_edge(edge, graph);
+  pruneBranch(graph, u_desc);
+}
+
 void extractTopology::pruneBranches(Graph &graph)
 {
-  bool update;
-  do {
-    update = false;
-
-    const auto vertices = boost::vertices(graph);
-    for (auto it = vertices.first; it != vertices.second; it++) {
-      if (boost::out_degree(*it, graph) != 1)
-        continue;
-      if (graph[*it].length > graph[*it].thickness)
-        continue;
-
-      const auto &edge = *(boost::out_edges(*it, graph).first);
-
-      auto &v = graph[*it];
-      auto &u = graph[boost::source(edge, graph) != *it ? boost::source(edge, graph) : boost::target(edge, graph)];
-      const auto r = (v() - u()).norm();
-
-      if (v.length + r > u.length)
-        u.length = v.length + r;
-
-      boost::remove_edge(edge, graph);
-      update = true;
-    }
-  } while (update);
+  const auto vertices = boost::vertices(graph);
+  for (auto it = vertices.first; it != vertices.second; it++)
+    pruneBranch(graph, *it);
 }
