@@ -22,22 +22,6 @@ struct Vertex {
   point::Vector operator()() const { return p; }
 };
 
-class EdgeFilter
-{
-public:
-  EdgeFilter() {}
-  template <typename Container>
-  EdgeFilter(const Container &edges)
-      : edges{edges.begin(), edges.end()} {}
-  bool operator()(const EdgeDescriptor &edge) const
-  {
-    return edges.count(edge) > 0;
-  }
-
-private:
-  std::set<EdgeDescriptor> edges;
-};
-
 void addVertex(Graph &graph, const point::Vector &p, const double &thickness);
 void addEdges(Graph &graph);
 Graph getMST(const Graph &graph);

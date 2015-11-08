@@ -28,6 +28,17 @@ void extractTopology::addEdges(Graph &graph)
 
 Graph extractTopology::getMST(const Graph &graph)
 {
+  struct EdgeFilter {
+    EdgeFilter() {}
+    EdgeFilter(const std::vector<EdgeDescriptor> &edges)
+        : edges{edges.begin(), edges.end()} {}
+    bool operator()(const EdgeDescriptor &edge) const
+    {
+      return edges.count(edge) > 0;
+    }
+    std::set<EdgeDescriptor> edges;
+  };
+
   std::vector<EdgeDescriptor> mst_edges;
   boost::kruskal_minimum_spanning_tree(graph, std::back_inserter(mst_edges));
   boost::filtered_graph<Graph, EdgeFilter> _mst{graph, mst_edges};
