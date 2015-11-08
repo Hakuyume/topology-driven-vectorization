@@ -1,5 +1,4 @@
 #include <iostream>
-#include <boost/graph/copy.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -22,6 +21,26 @@ void printSVG(const extractTopology::Graph &graph)
     const auto &v = graph[boost::source(*it, graph)];
     const auto &u = graph[boost::target(*it, graph)];
     std::cout << "<line x1=\"" << v()(0) << "\" y1=\"" << v()(1) << "\" x2=\"" << u()(0) << "\" y2=\"" << u()(1) << "\"/>" << std::endl;
+  }
+
+  std::cout << "</g>" << std::endl;
+  std::cout << "</svg>" << std::endl;
+}
+
+void printSVG(const extractTopology::Graph &graph, const std::vector<std::vector<extractTopology::VertexDescriptor>> &paths)
+{
+  std::cout << "<?xml version=\"1.0\"?>" << std::endl;
+  std::cout << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << std::endl;
+  std::cout << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << std::endl;
+  std::cout << "<g stroke=\"black\" stroke-width=\"0.1\" fill=\"none\">" << std::endl;
+
+  for (const auto &path : paths) {
+    std::cout << "<path d=\"M";
+    for (const auto &v_desc : path) {
+      const auto &v = graph[v_desc];
+      std::cout << " " << v()(0) << " " << v()(1);
+    }
+    std::cout << "\"/>" << std::endl;
   }
 
   std::cout << "</g>" << std::endl;
@@ -56,11 +75,7 @@ int main(int argc, char *argv[])
   auto mst = extractTopology::getMST(graph);
   extractTopology::pruneBranches(mst);
 
-  extractTopology::Graph skeleton;
-  boost::copy_graph(mst, skeleton);
-  extractTopology::skeletonize(skeleton);
-
-  printSVG(skeleton);
+  printSVG(mst, extractTopology::getPaths(mst));
 
   return 0;
 }

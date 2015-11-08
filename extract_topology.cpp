@@ -1,6 +1,7 @@
 #include <boost/graph/copy.hpp>
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
+#include <boost/graph/dijkstra_shortest_paths.hpp>
 #include "extract_topology.hpp"
 
 using namespace extractTopology;
@@ -85,4 +86,45 @@ void extractTopology::skeletonize(Graph &graph)
     boost::remove_edge(edge1, graph);
     boost::add_edge(u0_desc, u1_desc, graph);
   }
+}
+
+std::vector<VertexDescriptor> getShortestPath(const Graph &graph, const VertexDescriptor &v_desc, const VertexDescriptor &u_desc)
+{
+  using IndexMap = boost::property_map<Graph, boost::vertex_index_t>::type;
+  using PredecessorMap = boost::iterator_property_map<VertexDescriptor *, IndexMap, VertexDescriptor, VertexDescriptor &>;
+  using DistanceMap = boost::iterator_property_map<double *, IndexMap, double, double &>;
+
+  std::vector<VertexDescriptor> predecessors(boost::num_vertices(graph));
+  std::vector<double> distances(boost::num_vertices(graph));
+
+  IndexMap indexMap = boost::get(boost::vertex_index, graph);
+  PredecessorMap predecessorMap{&predecessors[0], indexMap};
+  DistanceMap distanceMap{&distances[0], indexMap};
+
+  boost::dijkstra_shortest_paths(graph, u_desc, boost::distance_map(distanceMap).predecessor_map(predecessorMap));
+
+  std::vector<VertexDescriptor> path;
+  for (auto w_desc = v_desc; w_desc != u_desc; w_desc = predecessorMap[w_desc])
+    path.push_back(w_desc);
+  path.push_back(u_desc);
+
+  return path;
+}
+
+std::vector<std::vector<VertexDescriptor>> extractTopology::getPaths(Graph &graph)
+{
+  Graph skeleton;
+  boost::copy_graph(graph, skeleton);
+  skeletonize(skeleton);
+
+  std::vector<std::vector<VertexDescriptor>> paths;
+
+  const auto edges = boost::edges(skeleton);
+  for (auto it = edges.first; it != edges.second; it++) {
+    const auto v_desc = boost::source(*it, skeleton);
+    const auto u_desc = boost::target(*it, skeleton);
+    paths.push_back(getShortestPath(graph, v_desc, u_desc));
+  }
+
+  return paths;
 }
