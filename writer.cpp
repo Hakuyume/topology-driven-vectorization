@@ -30,15 +30,3 @@ void SVG::operator<<(const extractTopology::Graph &graph)
   }
   footer();
 }
-
-void SVG::operator<<(const std::vector<std::vector<extractTopology::Vertex>> &paths)
-{
-  header();
-  for (const auto &path : paths) {
-    os << "<path d=\"M";
-    for (const auto &v : path)
-      os << " " << v()(0) << " " << v()(1);
-    os << "\"/>" << std::endl;
-  }
-  footer();
-}

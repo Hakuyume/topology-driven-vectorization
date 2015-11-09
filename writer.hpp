@@ -10,7 +10,18 @@ class SVG
 public:
   SVG(std::ostream &os, const double &width = 1);
   void operator<<(const extractTopology::Graph &graph);
-  void operator<<(const std::vector<std::vector<extractTopology::Vertex>> &paths);
+  template <typename Container>
+  void operator<<(const Container &paths)
+  {
+    header();
+    for (const auto &path : paths) {
+      os << "<path d=\"M";
+      for (const auto &p : path)
+        os << " " << p()(0) << " " << p()(1);
+      os << "\"/>" << std::endl;
+    }
+    footer();
+  }
 
 private:
   std::ostream &os;

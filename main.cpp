@@ -4,12 +4,12 @@
 #include <opencv2/highgui.hpp>
 #include "move_pixels.hpp"
 #include "extract_topology.hpp"
+#include "extract_centerline.hpp"
 #include "writer.hpp"
 
 constexpr double eps_coeff{0.1};
 constexpr double delta_t{0.1};
 constexpr double moving_limit{0.01};
-
 
 int main(int argc, char *argv[])
 {
@@ -37,7 +37,9 @@ int main(int argc, char *argv[])
   extractTopology::pruneBranches(mst);
   const auto paths = extractTopology::getPaths(mst);
 
-  writer::SVG(std::cout) << paths;
+  std::vector<extractCenterline::Centerline> centerlines(paths.begin(), paths.end());
+
+  writer::SVG(std::cout) << centerlines;
 
   return 0;
 }
