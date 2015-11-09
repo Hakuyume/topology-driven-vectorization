@@ -10,6 +10,7 @@
 constexpr double eps_coeff{0.1};
 constexpr double delta_t{0.1};
 constexpr double moving_limit{0.01};
+constexpr int smoothing_iteration{100};
 
 int main(int argc, char *argv[])
 {
@@ -39,8 +40,9 @@ int main(int argc, char *argv[])
 
   std::vector<extractCenterline::Centerline> centerlines(paths.begin(), paths.end());
 
-  for (auto &c : centerlines)
-    c.smooth();
+  for (auto i = 0; i < smoothing_iteration; i++)
+    for (auto &c : centerlines)
+      c.smooth();
 
   writer::SVG(std::cout) << centerlines;
 
