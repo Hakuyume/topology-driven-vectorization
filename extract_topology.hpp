@@ -14,6 +14,7 @@ using Graph = boost::adjacency_list<boost::vecS,
                                     boost::property<boost::edge_weight_t, double>>;
 using VertexDescriptor = boost::graph_traits<Graph>::vertex_descriptor;
 using EdgeDescriptor = boost::graph_traits<Graph>::edge_descriptor;
+using Path = std::vector<Vertex>;
 
 class Vertex
 {
@@ -55,5 +56,5 @@ Graph createGraph(const Container &points)
 Graph getMST(const Graph &graph);
 void pruneBranches(Graph &graph);
 void skeletonize(Graph &graph);
-std::vector<std::vector<Vertex>> getPaths(Graph &graph);
+std::vector<Path> getPaths(Graph &graph);
 }
