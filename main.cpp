@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
 
   std::vector<extractCenterline::Centerline> centerlines(paths.begin(), paths.end());
 
+  for (auto &c : centerlines)
+    c.smooth();
+
   writer::SVG(std::cout) << centerlines;
 
   return 0;
