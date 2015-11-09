@@ -12,35 +12,19 @@ double Pixel::thickness() const
   return t;
 }
 
-void Pixel::setDelta(const std::vector<Pixel> &pixels)
+void Pixel::setDelta(const Pixel &prev, const Pixel &next)
 {
-  if (pixels.size() < 3)
-    return;
-
-  if (p == (*pixels.begin())() or p == (*pixels.rbegin())()) {
-    delta = point::Vector::Zero();
-    return;
-  }
-
-  point::Vector normal;
   point::Vector p_sum{point::Vector::Zero()};
   double w_sum{0};
 
-  for (auto it = pixels.begin(); it != pixels.end(); it++) {
-    const double w = exp(-((*it)() - p).squaredNorm() / (2 * t * t));
-    p_sum += w * (*it)();
+  for (const auto &q : {prev, *this, next}) {
+    const double w = exp(-(q() - p).squaredNorm() / (2 * t * t));
+    p_sum += w * q();
     w_sum += w;
-
-    if ((*it)() != p)
-      continue;
-
-    const auto &prev = *std::prev(it);
-    const auto &next = *std::next(it);
-
-    const auto v = next() - prev();
-    normal = point::Vector(-v(1), v(0)).normalized();
   }
 
+  const auto v = (next() - p).normalized() + (p - prev()).normalized();
+  const auto normal = point::Vector(-v(1), v(0)).normalized();
   delta = (p_sum / w_sum - p).dot(normal) * normal;
 }
 
@@ -61,8 +45,10 @@ std::vector<Pixel>::const_iterator Centerline::end() const
 
 void Centerline::smooth()
 {
-  for (auto &p : pixels)
-    p.setDelta(pixels);
+  if (pixels.size() < 3)
+    return;
+  for (auto it = std::next(pixels.begin()); std::next(it) != pixels.end(); it++)
+    it->setDelta(*std::prev(it), *std::next(it));
   for (auto &p : pixels)
     p.move();
 }

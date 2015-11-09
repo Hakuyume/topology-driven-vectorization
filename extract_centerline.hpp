@@ -9,15 +9,16 @@ class Pixel
 public:
   template <typename T>
   Pixel(const T &p)
-      : p{p()}, t{p.thickness()} {}
+      : p{p()}, t{p.thickness()}, delta{point::Vector::Zero()} {}
   point::Vector operator()() const;
   double thickness() const;
-  void setDelta(const std::vector<Pixel> &pixels);
+  void setDelta(const Pixel &prev, const Pixel &next);
   void move();
 
 private:
-  point::Vector p, delta;
+  point::Vector p;
   double t;
+  point::Vector delta;
 };
 
 class Centerline
