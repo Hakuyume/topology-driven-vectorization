@@ -18,7 +18,7 @@ void Pixel::setDelta(const Pixel &prev, const Pixel &next)
   double w_sum{0};
 
   for (const auto &q : {prev, *this, next}) {
-    const double w = exp(-(q() - p).squaredNorm() / (2 * t * t));
+    const double w = exp(-(q() - p).norm() / (2 * t * t));
     p_sum += w * q();
     w_sum += w;
   }
