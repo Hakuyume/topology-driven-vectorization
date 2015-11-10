@@ -28,6 +28,9 @@ void Pixel::update(const point::Map<Pixel> &map, const size_t &width, const size
   if (not active)
     return;
 
+  p += m;
+  step++;
+
   if (p(0) < 0 or width < p(0) or p(1) < 0 or height < p(1)) {
     active = false;
     return;
@@ -38,9 +41,6 @@ void Pixel::update(const point::Map<Pixel> &map, const size_t &width, const size
       active = false;
       return;
     }
-
-  p += m;
-  step++;
 }
 
 PixelSet::PixelSet(const cv::Mat &src, const double &eps_coeff, const double &delta_t)
