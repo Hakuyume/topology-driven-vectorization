@@ -10,7 +10,7 @@
 constexpr double eps_coeff{0.1};
 constexpr double delta_t{0.1};
 constexpr double moving_limit{0.01};
-constexpr int smoothing_iteration{100};
+constexpr int smoothing_iteration{5};
 
 int main(int argc, char *argv[])
 {
