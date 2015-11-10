@@ -42,6 +42,8 @@ Graph createGraph(const Container &points)
   point::Map<Vertex> map;
 
   for (const auto &p : points) {
+    if (map.find(p(), 0).size() > 0)
+      continue;
     const auto desc = boost::add_vertex(graph);
     auto &v = graph[desc];
     v = Vertex(p, desc);
