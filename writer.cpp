@@ -2,15 +2,15 @@
 
 using namespace writer;
 
-SVG::SVG(std::ostream &os, const double &width)
-    : os{os}, width{width} {};
+SVG::SVG(std::ostream &os, const double &thickness)
+    : os{os}, thickness{thickness} {};
 
 void SVG::header()
 {
   os << "<?xml version=\"1.0\"?>" << std::endl;
   os << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << std::endl;
   os << "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << std::endl;
-  os << "<g stroke=\"black\" stroke-width=\"" << width << "\" fill=\"none\">" << std::endl;
+  os << "<g stroke=\"black\" stroke-width=\"" << thickness << "\" fill=\"none\">" << std::endl;
 }
 
 void SVG::footer()

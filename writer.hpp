@@ -8,7 +8,7 @@ namespace writer
 class SVG
 {
 public:
-  SVG(std::ostream &os, const double &width = 1);
+  SVG(std::ostream &os, const double &thickness = 1);
   void operator<<(const extractTopology::Graph &graph);
   template <typename Container>
   void operator<<(const Container &paths)
@@ -25,7 +25,7 @@ public:
 
 private:
   std::ostream &os;
-  double width;
+  double thickness;
   void header();
   void footer();
 };
