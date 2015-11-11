@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -15,16 +16,29 @@ constexpr int smoothing_iteration{100};
 int main(int argc, char *argv[])
 {
   if (argc < 2) {
-    std::cerr << "no file specified" << std::endl;
+    std::cerr << "No input file specified." << std::endl;
     return 1;
   }
   cv::Mat raw = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
   if (raw.empty()) {
-    std::cerr << "can't open file '" << argv[1] << "'" << std::endl;
+    std::cerr << "Can't open input file '" << argv[1] << "'." << std::endl;
     return 1;
   }
   cv::Mat src;
   raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
+
+  std::ostream os{std::cout.rdbuf()};
+  std::ofstream ofs;
+  if (argc < 3)
+    std::cerr << "No output file specified. Use stdout.";
+  else {
+    ofs.open(argv[2], std::ios::out | std::ios::trunc);
+    if (not ofs.is_open()) {
+      std::cerr << "Can't open output file '" << argv[2] << "'." << std::endl;
+      return 1;
+    }
+    os.rdbuf(ofs.rdbuf());
+  }
 
   movePixels::PixelSet pixelSet{src, eps_coeff, delta_t};
   std::cerr << "extract " << pixelSet.countActivePixels() << " pixels" << std::endl;
@@ -44,7 +58,7 @@ int main(int argc, char *argv[])
     for (auto &c : centerlines)
       c.smooth();
 
-  writer::SVG(std::cout) << centerlines;
+  writer::SVG(os) << centerlines;
 
   return 0;
 }
