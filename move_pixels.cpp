@@ -64,24 +64,29 @@ PixelSet::PixelSet(const cv::Mat &src, const double &eps_coeff, const double &de
         Pixel(
             point::Vector(index.x, index.y),
             point::Vector(grad_x.at<double>(index), grad_y.at<double>(index)) * delta_t));
+  actives = pixels.size();
 }
 
 size_t PixelSet::countActivePixels() const
 {
-  size_t count = 0;
-  for (const auto &p : pixels)
+  return actives;
+}
+
+void PixelSet::movePixels()
+{
+  const point::Map<Pixel> map{pixels};
+  actives = 0;
+  for (auto &p : pixels) {
+    p.update(map, width, height);
     if (p.isActive())
-      count++;
-  return count;
+      actives++;
+  }
 }
 
 void PixelSet::movePixels(const size_t &limit)
 {
-  while (countActivePixels() > limit) {
-    const point::Map<Pixel> map{pixels};
-    for (auto &p : pixels)
-      p.update(map, width, height);
-  }
+  while (countActivePixels() > limit)
+    movePixels();
 }
 
 std::vector<Pixel> PixelSet::getValidPixels() const

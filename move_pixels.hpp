@@ -25,11 +25,13 @@ class PixelSet
 public:
   PixelSet(const cv::Mat &src, const double &eps_coeff, const double &delta_t);
   size_t countActivePixels() const;
+  void movePixels();
   void movePixels(const size_t &limit);
   std::vector<Pixel> getValidPixels() const;
 
 private:
   size_t width, height;
+  size_t actives;
   std::vector<Pixel> pixels;
 };
 }
