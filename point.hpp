@@ -8,31 +8,35 @@ namespace point
 {
 using Vector = Eigen::Vector2d;
 
+class Point
+{
+public:
+  Point() {}
+  Point(const Point &p)
+      : pos{p.pos}, thick{p.thick} {}
+  Point(const Vector &p, const double &t)
+      : pos{p}, thick{t} {}
+  operator Point() const { return {pos, thick}; }
+  const point::Vector &operator()() const { return pos; }
+  const double &thickness() const { return thick; }
+protected:
+  Vector pos;
+  double thick;
+};
+
 template <class T>
 class Map
 {
 public:
-  Map()
-  {
-  }
-
+  Map() {}
   template <class Container>
   Map(const Container &points)
   {
     for (const auto &p : points)
       push(p);
   }
-
-  size_t size() const
-  {
-    return map.size();
-  }
-
-  void push(const T &p)
-  {
-    map.emplace(p(), p);
-  }
-
+  size_t size() const { return map.size(); }
+  void push(const T &p) { map.emplace(p(), p); }
   std::vector<T> find(const Vector &p, const double &r) const
   {
     std::vector<T> neighbors;

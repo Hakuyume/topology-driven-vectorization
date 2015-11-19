@@ -5,17 +5,15 @@
 
 namespace movePixels
 {
-class Pixel
+class Pixel : public point::Point
 {
 public:
-  Pixel(const point::Vector &pos, const point::Vector &moving);
-  point::Vector operator()() const;
-  double thickness() const;
+  Pixel(const point::Vector &p, const point::Vector &m);
   bool isActive() const;
   void update(const point::Map<Pixel> &map, const size_t &width, const size_t &height);
 
 private:
-  point::Vector p, m;
+  point::Vector m;
   bool active;
   unsigned int step;
 };

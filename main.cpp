@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     for (auto &c : centerlines)
       c.smooth();
 
-  writer::SVG(os) << centerlines;
+  writer::JSON(os).write(centerlines);
 
   return 0;
 }

@@ -10,14 +10,9 @@ Vertex::Vertex()
 {
 }
 
-point::Vector Vertex::operator()() const
+Vertex::Vertex(const point::Point &p, const VertexDescriptor &desc)
+    : point::Point{p}, l{0}, v_desc{desc}
 {
-  return p;
-}
-
-double Vertex::thickness() const
-{
-  return t;
 }
 
 VertexDescriptor Vertex::desc() const
@@ -27,12 +22,12 @@ VertexDescriptor Vertex::desc() const
 
 bool Vertex::isRemovable(const Graph &graph) const
 {
-  return l <= t and boost::out_degree(v_desc, graph) == 1;
+  return l <= thick and boost::out_degree(v_desc, graph) == 1;
 }
 
 bool Vertex::updateLength(const Vertex &v)
 {
-  const auto r = (v.p - p).norm();
+  const auto r = (v.pos - pos).norm();
   if (v.l + r <= l)
     return false;
   l = v.l + r;

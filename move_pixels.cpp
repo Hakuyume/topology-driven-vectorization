@@ -3,19 +3,14 @@
 
 using namespace movePixels;
 
+bool inRect(const point::Vector &p, const double &width, const double &height)
+{
+  return 0 <= p(0) and p(0) < width and 0 <= p(1) and p(1) < height;
+}
+
 Pixel::Pixel(const point::Vector &p, const point::Vector &m)
-    : p{p}, m{m}, active{true}, step{0}
+    : point::Point{p, 0}, m{m}, active{true}, step{0}
 {
-}
-
-point::Vector Pixel::operator()() const
-{
-  return p;
-}
-
-double Pixel::thickness() const
-{
-  return m.norm() * step;
 }
 
 bool Pixel::isActive() const
@@ -28,16 +23,16 @@ void Pixel::update(const point::Map<Pixel> &map, const size_t &width, const size
   if (not active)
     return;
 
-  p += m;
-  step++;
+  pos += m;
+  thick = m.norm() * ++step;
 
-  if (p(0) < 0 or width < p(0) or p(1) < 0 or height < p(1)) {
+  if (not inRect(pos, width, height)) {
     active = false;
     return;
   }
 
-  for (const auto &q : map.find(p, 1))
-    if (m.dot(q.m) < 0 and m.dot(q.p - p) < 0) {
+  for (const auto &q : map.find(pos, 1))
+    if (m.dot(q.m) < 0 and m.dot(q.pos - pos) < 0) {
       active = false;
       return;
     }
@@ -97,7 +92,7 @@ std::vector<Pixel> PixelSet::getValidPixels() const
   for (const auto &p : pixels) {
     if (p.isActive())
       continue;
-    if (p()(0) < 0 or width < p()(0) or p()(1) < 0 or height < p()(1))
+    if (not inRect(p(), width, height))
       continue;
     if (map.find(p(), 1).size() < 3)
       continue;

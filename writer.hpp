@@ -1,32 +1,50 @@
 #pragma once
 
 #include <ostream>
-#include "extract_topology.hpp"
+#include "point.hpp"
+#include "extract_centerline.hpp"
 
 namespace writer
 {
-class SVG
+class JSON
 {
 public:
-  SVG(std::ostream &os, const double &thickness = 1);
-  void operator<<(const extractTopology::Graph &graph);
-  template <typename Container>
-  void operator<<(const Container &paths)
+  JSON(std::ostream &os)
+      : os{os} {};
+
+  template <typename Iterator>
+  void write_iterators(const Iterator &begin, const Iterator &end)
   {
-    header();
-    for (const auto &path : paths) {
-      os << "<path d=\"M";
-      for (const auto &p : path)
-        os << " " << p()(0) << " " << p()(1);
-      os << "\"/>" << std::endl;
+    os << "[";
+    for (auto it = begin; it != end; it++) {
+      if (it != begin)
+        os << ",";
+      write(*it);
     }
-    footer();
+    os << "]";
+  }
+
+  template <typename T>
+  void write(const std::vector<T, std::allocator<T>> &vector)
+  {
+    write_iterators(vector.begin(), vector.end());
+  }
+
+  void write(const extractCenterline::Centerline &line)
+  {
+    write_iterators(line.begin(), line.end());
+  }
+
+  void write(const point::Point &p)
+  {
+    os << "{"
+       << "\"x\":" << p()(0) << ","
+       << "\"y\":" << p()(1) << "."
+       << "\"thickness\":" << p.thickness()
+       << "}";
   }
 
 private:
   std::ostream &os;
-  double thickness;
-  void header();
-  void footer();
 };
 }

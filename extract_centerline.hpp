@@ -4,20 +4,14 @@
 
 namespace extractCenterline
 {
-class Pixel
+class Pixel : public point::Point
 {
 public:
-  template <typename T>
-  Pixel(const T &p)
-      : p{p()}, t{p.thickness()}, delta{point::Vector::Zero()} {}
-  point::Vector operator()() const;
-  double thickness() const;
+  Pixel(const point::Point &p);
   void setDelta(const Pixel &prev, const Pixel &next);
   void move();
 
 private:
-  point::Vector p;
-  double t;
   point::Vector delta;
 };
 

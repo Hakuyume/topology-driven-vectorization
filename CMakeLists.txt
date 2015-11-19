@@ -7,8 +7,7 @@ add_executable(${PROJECT_NAME}
   main.cpp
   move_pixels.cpp
   extract_topology.cpp
-  extract_centerline.cpp
-  writer.cpp)
+  extract_centerline.cpp)
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})

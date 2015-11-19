@@ -16,22 +16,17 @@ using VertexDescriptor = boost::graph_traits<Graph>::vertex_descriptor;
 using EdgeDescriptor = boost::graph_traits<Graph>::edge_descriptor;
 using Path = std::vector<Vertex>;
 
-class Vertex
+class Vertex : public point::Point
 {
 public:
   Vertex();
-  template <typename T>
-  Vertex(const T &p, const VertexDescriptor &desc)
-      : p{p()}, t{p.thickness()}, l{0}, v_desc{desc} {}
-  point::Vector operator()() const;
-  double thickness() const;
+  Vertex(const point::Point &p, const VertexDescriptor &desc);
   VertexDescriptor desc() const;
   bool isRemovable(const Graph &graph) const;
   bool updateLength(const Vertex &v);
 
 private:
-  point::Vector p;
-  double t, l;
+  double l;
   VertexDescriptor v_desc;
 };
 
