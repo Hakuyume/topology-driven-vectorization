@@ -28,14 +28,9 @@ void Pixel::move()
   pos += delta;
 }
 
-std::vector<Pixel>::const_iterator Centerline::begin() const
+Centerline::operator const std::vector<Pixel> &() const
 {
-  return pixels.begin();
-}
-
-std::vector<Pixel>::const_iterator Centerline::end() const
-{
-  return pixels.end();
+  return pixels;
 }
 
 void Centerline::smooth()

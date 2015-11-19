@@ -12,27 +12,21 @@ public:
   JSON(std::ostream &os)
       : os{os} {};
 
-  template <typename Iterator>
-  void write_iterators(const Iterator &begin, const Iterator &end)
+  template <typename T>
+  void write(const std::vector<T> &vector)
   {
     os << "[";
-    for (auto it = begin; it != end; it++) {
-      if (it != begin)
+    for (auto it = vector.begin(); it != vector.end(); it++) {
+      if (it != vector.begin())
         os << ",";
       write(*it);
     }
     os << "]";
   }
 
-  template <typename T>
-  void write(const std::vector<T, std::allocator<T>> &vector)
-  {
-    write_iterators(vector.begin(), vector.end());
-  }
-
   void write(const extractCenterline::Centerline &line)
   {
-    write_iterators(line.begin(), line.end());
+    write<extractCenterline::Pixel>(line);
   }
 
   void write(const point::Point &p)

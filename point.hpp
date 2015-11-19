@@ -16,7 +16,6 @@ public:
       : pos{p.pos}, thick{p.thick} {}
   Point(const Vector &p, const double &t)
       : pos{p}, thick{t} {}
-  operator Point() const { return {pos, thick}; }
   point::Vector operator()() const { return pos; }
   double thickness() const { return thick; }
 protected:
@@ -29,8 +28,7 @@ class Map
 {
 public:
   Map() {}
-  template <class Container>
-  Map(const Container &points)
+  Map(const std::vector<T> &points)
   {
     for (const auto &p : points)
       push(p);

@@ -18,11 +18,10 @@ private:
 class Centerline
 {
 public:
-  template <typename Container>
-  Centerline(const Container &points)
+  template <typename T>
+  Centerline(const std::vector<T> &points)
       : pixels(points.begin(), points.end()) {}
-  std::vector<Pixel>::const_iterator begin() const;
-  std::vector<Pixel>::const_iterator end() const;
+  operator const std::vector<Pixel> &() const;
   void smooth();
 
 private:

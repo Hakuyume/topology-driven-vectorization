@@ -30,8 +30,8 @@ private:
   VertexDescriptor v_desc;
 };
 
-template <typename Container>
-Graph createGraph(const Container &points)
+template <typename T>
+Graph createGraph(const std::vector<T> &points)
 {
   Graph graph;
   point::Map<Vertex> map;
