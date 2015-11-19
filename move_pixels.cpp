@@ -5,7 +5,7 @@ using namespace movePixels;
 
 bool inRect(const point::Vector &p, const double &width, const double &height)
 {
-  return 0 <= p(0) and p(0) < width and 0 <= p(1) and p(1) < height;
+  return (0 <= p(0) and p(0) < width and 0 <= p(1) and p(1) < height);
 }
 
 Pixel::Pixel(const point::Vector &p, const point::Vector &m)

@@ -17,8 +17,8 @@ public:
   Point(const Vector &p, const double &t)
       : pos{p}, thick{t} {}
   operator Point() const { return {pos, thick}; }
-  const point::Vector &operator()() const { return pos; }
-  const double &thickness() const { return thick; }
+  point::Vector operator()() const { return pos; }
+  double thickness() const { return thick; }
 protected:
   Vector pos;
   double thick;
