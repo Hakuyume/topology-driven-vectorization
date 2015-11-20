@@ -18,8 +18,8 @@ void Pixel::setDelta(const Pixel &prev, const Pixel &next)
     w_sum += w;
   }
 
-  const auto v = (next.pos - pos).normalized() + (pos - prev.pos).normalized();
-  const auto normal = point::Vector(-v(1), v(0)).normalized();
+  const point::Vector v = (next.pos - pos).normalized() + (pos - prev.pos).normalized();
+  const point::Vector normal = point::Vector(-v(1), v(0)).normalized();
   delta = (p_sum / w_sum - pos).dot(normal) * normal;
 }
 

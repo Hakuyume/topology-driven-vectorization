@@ -34,34 +34,33 @@ public:
       push(p);
   }
   size_t size() const { return map.size(); }
-  void push(const T &p) { map.emplace(p(), p); }
+  void push(const T &p) { map.emplace(genKey(p()), p); }
   std::vector<T> find(const Vector &p, const double &r) const
   {
     std::vector<T> neighbors;
-
-    for (int dx = -ceil(r); dx <= ceil(r); dx++)
-      for (int dy = -ceil(r); dy <= ceil(r); dy++) {
-        const auto key = p + Vector(dx, dy);
-        const auto range = map.equal_range(key);
+    Vector d;
+    for (d(0) = -ceil(r); d(0) <= ceil(r); d(0)++)
+      for (d(1) = -ceil(r); d(1) <= ceil(r); d(1)++) {
+        const auto range = map.equal_range(genKey(p + d));
         for (auto it = range.first; it != range.second; it++)
           if ((it->second() - p).norm() <= r)
             neighbors.push_back(it->second);
       }
-
     return neighbors;
   }
 
 private:
+  using Key = Eigen::Vector2i;
   struct CmpVector {
-    bool operator()(const Vector &a, const Vector &b) const
+    bool operator()(const Key &a, const Key &b) const
     {
-      if (floor(a(0)) != floor(b(0)))
-        return floor(a(0)) < floor(b(0));
+      if (a(0) != b(0))
+        return a(0) < b(0);
       else
-        return floor(a(1)) < floor(b(1));
+        return a(1) < b(1);
     }
   };
-
-  std::multimap<Vector, T, CmpVector> map;
+  std::multimap<Eigen::Vector2i, T, CmpVector> map;
+  static Key genKey(const Vector &p) { return {floor(p(0)), floor(p(1))}; }
 };
 }
