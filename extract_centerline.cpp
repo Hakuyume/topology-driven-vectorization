@@ -3,13 +3,13 @@
 using namespace extractCenterline;
 
 Pixel::Pixel(const point::Point &p)
-    : point::Point{p}
+    : point::Point{p}, delta{0, 0}
 {
 }
 
 void Pixel::setDelta(const Pixel &prev, const Pixel &next)
 {
-  point::Vector p_sum;
+  point::Vector p_sum{0, 0};
   double w_sum{0};
 
   for (const auto &q : {prev, *this, next}) {
