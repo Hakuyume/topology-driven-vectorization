@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -27,19 +26,6 @@ int main(int argc, char *argv[])
   cv::Mat src;
   raw.convertTo(src, CV_64F, -1.0 / 256, 1.0);
 
-  std::ostream os{std::cout.rdbuf()};
-  std::ofstream ofs;
-  if (argc < 3)
-    std::cerr << "No output file specified. Use stdout.";
-  else {
-    ofs.open(argv[2], std::ios::out | std::ios::trunc);
-    if (not ofs.is_open()) {
-      std::cerr << "Can't open output file '" << argv[2] << "'." << std::endl;
-      return 1;
-    }
-    os.rdbuf(ofs.rdbuf());
-  }
-
   movePixels::PixelSet pixelSet{src, eps_coeff, delta_t};
   std::cerr << "extract " << pixelSet.countActivePixels() << " pixels" << std::endl;
   std::cerr << "moving pixels ... ";
@@ -58,7 +44,7 @@ int main(int argc, char *argv[])
     for (auto &c : centerlines)
       c.smooth();
 
-  writer::JSON(os).write(centerlines);
+  writer::JSON(std::cout).write(centerlines);
 
   return 0;
 }
