@@ -18,7 +18,7 @@ private:
 class Centerline
 {
 public:
-  template <typename T>
+  template <class T>
   Centerline(const std::vector<T> &points)
       : pixels(points.begin(), points.end()) {}
   operator const std::vector<Pixel> &() const;

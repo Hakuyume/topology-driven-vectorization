@@ -12,7 +12,7 @@ public:
   JSON(std::ostream &os)
       : os{os} {};
 
-  template <typename T>
+  template <class T>
   void write(const std::vector<T> &vector)
   {
     os << "[";

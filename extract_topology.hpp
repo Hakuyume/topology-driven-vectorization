@@ -30,7 +30,7 @@ private:
   VertexDescriptor v_desc;
 };
 
-template <typename T>
+template <class T>
 Graph createGraph(const std::vector<T> &points)
 {
   Graph graph;
