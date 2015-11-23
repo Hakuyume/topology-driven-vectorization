@@ -114,6 +114,18 @@ Path getShortestPath(const Graph &graph, const VertexDescriptor &v_desc, const V
   return path;
 }
 
+std::vector<std::pair<Vertex, Vertex>> extractTopology::getEdges(Graph &graph)
+{
+  std::vector<std::pair<Vertex, Vertex>> edge_pairs;
+  const auto edges = boost::edges(graph);
+  for (auto it = edges.first; it != edges.second; it++) {
+    const auto v_desc = boost::source(*it, graph);
+    const auto u_desc = boost::target(*it, graph);
+    edge_pairs.push_back({graph[v_desc], graph[u_desc]});
+  }
+  return edge_pairs;
+}
+
 std::vector<Path> extractTopology::getPaths(Graph &graph)
 {
   Graph skeleton;

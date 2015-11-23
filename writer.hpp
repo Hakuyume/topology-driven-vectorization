@@ -24,6 +24,16 @@ public:
     os << "]";
   }
 
+  template <class T1, class T2>
+  void write(const std::pair<T1, T2> &pair)
+  {
+    os << "[";
+    write(pair.first);
+    os << ",";
+    write(pair.second);
+    os << "]";
+  }
+
   void write(const extractCenterline::Centerline &line)
   {
     write<extractCenterline::Pixel>(line);

@@ -53,5 +53,6 @@ Graph createGraph(const std::vector<T> &points)
 Graph getMST(const Graph &graph);
 void pruneBranches(Graph &graph);
 void skeletonize(Graph &graph);
+std::vector<std::pair<Vertex, Vertex>> getEdges(Graph &graph);
 std::vector<Path> getPaths(Graph &graph);
 }
