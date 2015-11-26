@@ -20,9 +20,9 @@ VertexDescriptor Vertex::desc() const
   return v_desc;
 }
 
-bool Vertex::isRemovable(const Graph &graph) const
+bool Vertex::isRemovable(const Graph &graph, const double &length) const
 {
-  return l <= thick and boost::out_degree(v_desc, graph) == 1;
+  return l <= (length > 0 ? length : thick) and boost::out_degree(v_desc, graph) == 1;
 }
 
 bool Vertex::updateLength(const Vertex &v)
@@ -55,24 +55,24 @@ Graph extractTopology::getMST(const Graph &graph)
   return mst;
 }
 
-void pruneBranch(Graph &graph, const VertexDescriptor &v_desc)
+void pruneBranch(Graph &graph, const VertexDescriptor &v_desc, const double &length)
 {
   auto &v = graph[v_desc];
-  if (not v.isRemovable(graph))
+  if (not v.isRemovable(graph, length))
     return;
   const auto &edge = *(boost::out_edges(v_desc, graph).first);
   const auto u_desc = boost::target(edge, graph);
   auto &u = graph[u_desc];
   u.updateLength(v);
   boost::remove_edge(edge, graph);
-  pruneBranch(graph, u_desc);
+  pruneBranch(graph, u_desc, length);
 }
 
-void extractTopology::pruneBranches(Graph &graph)
+void extractTopology::pruneBranches(Graph &graph, const double &length)
 {
   const auto vertices = boost::vertices(graph);
   for (auto it = vertices.first; it != vertices.second; it++)
-    pruneBranch(graph, *it);
+    pruneBranch(graph, *it, length);
 }
 
 void extractTopology::skeletonize(Graph &graph)

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <gflags/gflags.h>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -10,10 +11,13 @@
 constexpr double eps_coeff{0.1};
 constexpr double delta_t{0.1};
 constexpr double moving_limit{0.01};
-constexpr int smoothing_iteration{100};
+
+DEFINE_double(prune, 0, "limit length of pruning branches");
+DEFINE_uint64(smooth, 0, "iterations of smoothing paths");
 
 int main(int argc, char *argv[])
 {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
     std::cerr << "No input file specified." << std::endl;
     return 1;
@@ -35,12 +39,12 @@ int main(int argc, char *argv[])
 
   auto graph = extractTopology::createGraph(pixels);
   auto mst = extractTopology::getMST(graph);
-  extractTopology::pruneBranches(mst);
+  extractTopology::pruneBranches(mst, FLAGS_prune);
   const auto paths = extractTopology::getPaths(mst);
 
   std::vector<extractCenterline::Centerline> centerlines(paths.begin(), paths.end());
 
-  for (auto i = 0; i < smoothing_iteration; i++)
+  for (auto i = 0; i < FLAGS_smooth; i++)
     for (auto &c : centerlines)
       c.smooth();
 

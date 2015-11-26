@@ -22,7 +22,7 @@ public:
   Vertex();
   Vertex(const point::Point &p, const VertexDescriptor &desc);
   VertexDescriptor desc() const;
-  bool isRemovable(const Graph &graph) const;
+  bool isRemovable(const Graph &graph, const double &length = 0) const;
   bool updateLength(const Vertex &v);
 
 private:
@@ -51,7 +51,7 @@ Graph createGraph(const std::vector<T> &points)
 }
 
 Graph getMST(const Graph &graph);
-void pruneBranches(Graph &graph);
+void pruneBranches(Graph &graph, const double &length = 0);
 void skeletonize(Graph &graph);
 std::vector<std::pair<Vertex, Vertex>> getEdges(Graph &graph);
 std::vector<Path> getPaths(Graph &graph);

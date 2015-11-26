@@ -20,3 +20,7 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+
+find_package(gflags REQUIRED)
+include_directories(${gflags_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} gflags)
